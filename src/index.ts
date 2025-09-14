@@ -1,9 +1,11 @@
 import { Buffer } from 'buffer';
 import { Resend } from 'resend';
 import generateDiploma from './generateDiploma';
+import { verifyCaptcha } from './verifyCaptcha';
 
 interface Env {
 	RESEND_API_KEY: string;
+	CF_CAPTCHA_KEY: string;
 }
 
 interface RequestBody {
@@ -11,6 +13,7 @@ interface RequestBody {
 	username: string;
 	major: string;
 	degree: string;
+	captcha: string;
 }
 
 export default {
@@ -19,17 +22,27 @@ export default {
 			return new Response('Method Not Allowed', { status: 405 });
 		}
 
-		const resend = new Resend(env.RESEND_API_KEY);
-
 		try {
 			// Parse request body
 			const requestBody = (await request.json()) as RequestBody;
-			const { email, username, major, degree } = requestBody;
+			const { email, username, major, degree, captcha } = requestBody;
+
+			if (!captcha) {
+				return new Response('Missing captcha token.', { status: 400 });
+			}
+
+			// Verify captcha
+			const ip = request.headers.get('CF-Connecting-IP');
+			const captchaVerified = await verifyCaptcha({ token: captcha, ip, env });
+			if (!captchaVerified) {
+				return new Response('Invalid captcha response.', { status: 403 });
+			}
 
 			if (!email || !username || !major || !degree) {
 				return new Response('Missing required fields: email, username, major, degree', { status: 400 });
 			}
 
+			const resend = new Resend(env.RESEND_API_KEY);
 			const subject = 'Your Wild Chicken University Diploma';
 
 			const currentDate = new Date();
