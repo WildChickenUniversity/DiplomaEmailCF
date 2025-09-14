@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "email-with-resend",
+	"name": "wcu-email-resend",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-09-13",
 	"observability": {
