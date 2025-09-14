@@ -13,7 +13,7 @@ interface RequestBody {
 	username: string;
 	major: string;
 	degree: string;
-	captcha: string;
+	token: string;
 }
 
 export default {
@@ -25,15 +25,15 @@ export default {
 		try {
 			// Parse request body
 			const requestBody = (await request.json()) as RequestBody;
-			const { email, username, major, degree, captcha } = requestBody;
+			const { email, username, major, degree, token } = requestBody;
 
-			if (!captcha) {
+			if (!token) {
 				return new Response('Missing captcha token.', { status: 400 });
 			}
 
 			// Verify captcha
 			const ip = request.headers.get('CF-Connecting-IP');
-			const captchaVerified = await verifyCaptcha({ token: captcha, ip, env });
+			const captchaVerified = await verifyCaptcha({ token: token, ip, env });
 			if (!captchaVerified) {
 				return new Response('Invalid captcha response.', { status: 403 });
 			}
