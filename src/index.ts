@@ -52,7 +52,8 @@ export default {
       please go to our <a href="https://wcu.edu.pl">official website</a>
     </p>
     <p>
-      Squawk Squawk
+      Squawk Squawk <br>
+      Wild Chicken University Registrar
     </p>
     `;
 

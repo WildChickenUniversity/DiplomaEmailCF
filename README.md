@@ -1,0 +1,1 @@
+This is the repo hosting the diploma email sending services for the website.
